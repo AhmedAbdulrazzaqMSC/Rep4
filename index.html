@@ -35,10 +35,7 @@
       padding-bottom: 5px;
     }
     #logout { float: right; margin-bottom: 10px; }
-@media (max-width: 600px) {
-  form {
-    grid-template-columns: 1fr; /* stack all fields vertically */
-  }
+
 
   .full-width {
     grid-column: 1 / 2; /* single column on small screens */
@@ -64,7 +61,17 @@
   }
 }
 
-  </style>
+  
+@media (max-width: 480px) {
+  form {
+    grid-template-columns: 1fr;
+  }
+  .full-width {
+    grid-column: 1 / 2;
+  }
+}
+
+</style>
   <script>
     const USERS = {
       "Admin": "admin123",
