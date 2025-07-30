@@ -45,7 +45,10 @@
   </style>
 </head>
 <body>
-<header>REMS – Reefer Equipment Maintenance System</header>
+<header>
+    <button onclick="logout()" style="float:right; margin-right:10px; background-color:#990000; color:white; border:none; padding:5px 10px; cursor:pointer;">
+      Logout
+    </button>REMS – Reefer Equipment Maintenance System</header>
 <main>
 <form id="repairForm">
 <label for="containernr">CONTAINERNR</label><input id="containernr" name="containernr" oninput="this.value = this.value.toUpperCase()" pattern="^[A-Z]{4}[0-9]{7}$" required="" title="Must be 4 letters followed by 7 digits (e.g., MSDU9823150)" type="text"/>
@@ -224,6 +227,11 @@ function addUndefinedJob() {
 window.onload = () => {
   addJob();
 };
+
+function logout() {
+  localStorage.removeItem("loggedIn");
+  location.reload();
+}
 </script>
 <style>
   #loginOverlay {
@@ -270,6 +278,11 @@ window.onload = () => {
       document.getElementById('loginError').style.display = 'block';
     }
   }
+
+function logout() {
+  localStorage.removeItem("loggedIn");
+  location.reload();
+}
 </script>
 </body>
 </html>
