@@ -96,19 +96,28 @@
 
 
 <script>
-const jobData = [];
+const jobData = [
+  { code: "JC001", description: "Replace Compressor", part: "PN001", hours: 1.5 },
+  { code: "JC002", description: "Replace Sensor", part: "PN002", hours: 1.0 },
+  { code: "JC003", description: "Clean Evaporator", part: "PN003", hours: 0.5 },
+  { code: "JC004", description: "Fix Wiring", part: "PN004", hours: 0.75 },
+  { code: "JC005", description: "Change Controller", part: "PN005", hours: 1.2 }
+];
 
 function addJob() {
   const container = document.querySelector("#jobContainer fieldset");
   const fieldset = document.createElement("fieldset");
 
-  const options = jobData.map(j => `<option value="\${j.code}">\${j.description}</option>`).join('');
+  let options = "";
+  jobData.forEach(j => {
+    options += `<option value="${j.code}">${j.description}</option>`;
+  });
 
   fieldset.innerHTML = `
     <label>Job Description</label>
     <select name="job_description[]" onchange="fillJobData(this)">
       <option value="">Select</option>
-      \${options}
+      ${options}
     </select>
     <label>Job Code</label>
     <input type="text" name="job_code[]" readonly>
