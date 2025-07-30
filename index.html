@@ -43,6 +43,11 @@
       form { grid-template-columns: 1fr; }
     }
   </style>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 </head>
 <body>
 <header>
@@ -150,7 +155,7 @@ function addJob() {
 
   fieldset.innerHTML = `
     <label>Job Description</label>
-    <select name="job_description[]" onchange="fillJobData(this)">
+    <select name="job_description[]" class="job-select" onchange="fillJobData(this)">
       <option value="">Select</option>
       ${options}
     </select>
@@ -197,6 +202,7 @@ function addJob() {
     <input type="hidden" name="labor_hours[]" readonly>
   `;
   container.appendChild(fieldset);
+  $(fieldset).find('.job-select').select2({ width: '100%' });
 }
 
 function fillJobData(selectElem) {
@@ -278,6 +284,7 @@ function addUndefinedJob() {
     <input type="text" name="labor_hours[]">
   `;
   container.appendChild(fieldset);
+  $(fieldset).find('.job-select').select2({ width: '100%' });
 }
 
 window.onload = () => {
