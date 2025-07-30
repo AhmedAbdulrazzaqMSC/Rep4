@@ -1,11 +1,12 @@
 
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>REMS – Reefer Equipment Maintenance System</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>REMS – Reefer Equipment Maintenance System</title>
+<style>
     * { box-sizing: border-box; }
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
     header { background: #003366; color: white; padding: 15px 20px; text-align: center; font-size: 20px; }
@@ -44,57 +45,51 @@
   </style>
 </head>
 <body>
-  <header>REMS – Reefer Equipment Maintenance System</header>
-  <main>
-    <form id="repairForm">
-      <label for="containernr">CONTAINERNR</label><input type="text" id="containernr" name="containernr" required>
-      <label for="datum">DATUM (Date)</label><input type="date" id="datum" name="datum" required>
-      <label for="naam">NAAM (Technician Name)</label><input type="text" id="naam" name="naam" readonly>
-      <label for="model">MODEL</label><input type="text" id="model" name="model">
-      <label for="serienr">SERIENR.</label><input type="text" id="serienr" name="serienr">
-      <label for="warranty_id">WARRANTY ID NR</label><input type="text" id="warranty_id" name="warranty_id">
-      <label for="garantie">GARANTIE</label><input type="text" id="garantie" name="garantie">
-      <label for="setpoint">SETPOINT °C</label><input type="number" id="setpoint" name="setpoint">
-      <label for="vents">VENTS</label><input type="text" id="vents" name="vents">
-      <label for="hum">HUM</label><input type="text" id="hum" name="hum">
-      <label for="ambient">AMBIENT</label><input type="text" id="ambient" name="ambient">
-      <label for="supply_voor">SUPPLY VOOR</label><input type="text" id="supply_voor" name="supply_voor">
-      <label for="supply_na">SUPPLY NA</label><input type="text" id="supply_na" name="supply_na">
-      <label for="return_voor">RETURN VOOR</label><input type="text" id="return_voor" name="return_voor">
-      <label for="return_na">RETURN NA</label><input type="text" id="return_na" name="return_na">
-      <label for="temp_in_range">TEMPERATUUR IN-RANGE NA REPAIR</label><input type="text" id="temp_in_range" name="temp_in_range">
-      <label for="probleem" class="full-width">OMSCHRIJVING / PROBLEEM</label><textarea id="probleem" name="probleem" rows="3" class="full-width"></textarea>
-      <label for="opmerkingen" class="full-width">OPMERKINGEN</label><textarea id="opmerkingen" name="opmerkingen" rows="3" class="full-width"></textarea>
-
-      <div class="full-width" id="photosSection">
-        <fieldset>
-          <legend>Photos</legend>
-          <div id="fotos_voor">
-            <label>Fotos VOOR</label><input type="file" name="fotos_voor">
-          </div>
-          <button type="button" onclick="addPhoto('fotos_voor')" class="add-button">Add More Before Photos</button>
-          <div id="fotos_na">
-            <label>Fotos NA</label><input type="file" name="fotos_na">
-          </div>
-          <button type="button" onclick="addPhoto('fotos_na')" class="add-button">Add More After Photos</button>
-        </fieldset>
-      </div>
-
-      <div class="full-width" id="alarmContainer">
-        <fieldset><legend>Alarms</legend></fieldset>
-        <button type="button" onclick="addAlarm()" class="add-button">Add Alarm</button>
-      </div>
-
-      <div class="full-width" id="jobContainer">
-        <fieldset><legend>Job Tasks</legend></fieldset>
-        <button type="button" onclick="addJob()" class="add-button">Add Job</button>
-      </div>
-
-      <button type="submit" class="full-width">Submit Report</button>
-    </form>
-  </main>
-
-
+<header>REMS – Reefer Equipment Maintenance System</header>
+<main>
+<form id="repairForm">
+<label for="containernr">CONTAINERNR</label><input id="containernr" name="containernr" required="" type="text"/>
+<label for="datum">DATUM (Date)</label><input id="datum" name="datum" required="" type="date"/>
+<label for="naam">NAAM (Technician Name)</label><input id="naam" name="naam" readonly="" type="text"/>
+<label for="model">MODEL</label><input id="model" name="model" type="text"/>
+<label for="serienr">SERIENR.</label><input id="serienr" name="serienr" type="text"/>
+<label for="warranty_id">WARRANTY ID NR</label><input id="warranty_id" name="warranty_id" type="text"/>
+<label for="garantie">GARANTIE</label><input id="garantie" name="garantie" type="text"/>
+<label for="setpoint">SETPOINT °C</label><input id="setpoint" name="setpoint" type="number"/>
+<label for="vents">VENTS</label><input id="vents" name="vents" type="text"/>
+<label for="hum">HUM</label><input id="hum" name="hum" type="text"/>
+<label for="ambient">AMBIENT</label><input id="ambient" name="ambient" type="text"/>
+<label for="supply_voor">SUPPLY VOOR</label><input id="supply_voor" name="supply_voor" type="text"/>
+<label for="supply_na">SUPPLY NA</label><input id="supply_na" name="supply_na" type="text"/>
+<label for="return_voor">RETURN VOOR</label><input id="return_voor" name="return_voor" type="text"/>
+<label for="return_na">RETURN NA</label><input id="return_na" name="return_na" type="text"/>
+<label for="temp_in_range">TEMPERATUUR IN-RANGE NA REPAIR</label><input id="temp_in_range" name="temp_in_range" type="text"/>
+<label class="full-width" for="probleem">OMSCHRIJVING / PROBLEEM</label><textarea class="full-width" id="probleem" name="probleem" rows="3"></textarea>
+<label class="full-width" for="opmerkingen">OPMERKINGEN</label><textarea class="full-width" id="opmerkingen" name="opmerkingen" rows="3"></textarea>
+<div class="full-width" id="photosSection">
+<fieldset>
+<legend>Photos</legend>
+<div id="fotos_voor">
+<label>Fotos VOOR</label><input name="fotos_voor" type="file"/>
+</div>
+<button class="add-button" onclick="addPhoto('fotos_voor')" type="button">Add More Before Photos</button>
+<div id="fotos_na">
+<label>Fotos NA</label><input name="fotos_na" type="file"/>
+</div>
+<button class="add-button" onclick="addPhoto('fotos_na')" type="button">Add More After Photos</button>
+</fieldset>
+</div>
+<div class="full-width" id="alarmContainer">
+<fieldset><legend>Alarms</legend></fieldset>
+<button class="add-button" onclick="addAlarm()" type="button">Add Alarm</button>
+</div>
+<div class="full-width" id="jobContainer">
+<fieldset><legend>Job Tasks</legend></fieldset>
+<button class="add-button" onclick="addJob()" type="button">Add Job</button><button class="add-button" onclick="addUndefinedJob()" type="button">Add Undefined Job</button>
+</div>
+<button class="full-width" type="submit">Submit Report</button>
+</form>
+</main>
 <script>
 const jobData = [
   { code: "A011A", part: "38-00557-00", description: "Fan, Evaporator", hours: 0.5 },
@@ -159,7 +154,7 @@ function addJob() {
     <label>Job Code</label>
     <input type="text" name="job_code[]" readonly>
     <label>Part Number</label>
-    <input type="text" name="part_number[]" readonly>
+    <input type="text" name="part_number[]">
     <label>Part Description</label>
     <input type="text" name="part_description[]" readonly>
     <label>Quantity</label>
@@ -201,9 +196,81 @@ function addAlarm() {
   container.appendChild(input);
 }
 
+
+function addUndefinedJob() {
+  const container = document.querySelector("#jobContainer fieldset");
+  const fieldset = document.createElement("fieldset");
+  fieldset.innerHTML = `
+    <label>Job Description</label>
+    <input type="text" name="job_description[]">
+    <label>Job Code</label>
+    <input type="text" name="job_code[]">
+    <label>Part Number</label>
+    <input type="text" name="part_number[]">
+    <label>Part Description</label>
+    <input type="text" name="part_description[]">
+    <label>Quantity</label>
+    <input type="number" name="quantity[]">
+    <label>Old Serial Number</label>
+    <input type="text" name="serial_old[]">
+    <label>New Serial Number</label>
+    <input type="text" name="serial_new[]">
+    <label>Labor Hours</label>
+    <input type="text" name="labor_hours[]">
+  `;
+  container.appendChild(fieldset);
+}
+
 window.onload = () => {
   addJob();
 };
+</script>
+
+<style>
+  #loginOverlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 9999;
+  }
+  #loginBox {
+    background: white; padding: 20px; border-radius: 8px;
+    max-width: 300px; width: 90%;
+  }
+  #loginBox input { width: 100%; margin-bottom: 10px; padding: 8px; }
+  #loginError { color: red; display: none; font-size: 14px; }
+</style>
+<div id="loginOverlay">
+  <div id="loginBox">
+    <h3>Login</h3>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <div id="loginError">Invalid credentials</div>
+    <button onclick="validateLogin()">Login</button>
+  </div>
+</div>
+<script>
+  const credentials = {
+    "Brahim Moukafih": "bm123",
+    "Christophe Jongenelen": "cj123",
+    "Hassan Ouchan": "ho123",
+    "Marc Eyckmans": "me123",
+    "Mohammed Ballafkih": "mb123",
+    "Yannick Standaert": "ys123",
+    "Youssef Stitou": "yst123",
+    "Admin": "admin123"
+  };
+  function validateLogin() {
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value.trim();
+    if (credentials[u] && credentials[u] === p) {
+      document.getElementById('naam').value = u;
+      document.getElementById('loginOverlay').style.display = 'none';
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+    }
+  }
 </script>
 
 </body>
