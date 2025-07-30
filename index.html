@@ -48,33 +48,33 @@
 <header>REMS – Reefer Equipment Maintenance System</header>
 <main>
 <form id="repairForm">
-<label for="containernr">CONTAINERNR</label><input id="containernr" name="containernr" required="" type="text"/>
-<label for="datum">DATUM (Date)</label><input id="datum" name="datum" required="" type="date"/>
-<label for="naam">NAAM (Technician Name)</label><input id="naam" name="naam" readonly="" type="text"/>
-<label for="model">MODEL</label><input id="model" name="model" type="text"/>
-<label for="serienr">SERIENR.</label><input id="serienr" name="serienr" type="text"/>
-<label for="warranty_id">WARRANTY ID NR</label><input id="warranty_id" name="warranty_id" type="text"/>
-<label for="garantie">GARANTIE</label><input id="garantie" name="garantie" type="text"/>
-<label for="setpoint">SETPOINT °C</label><input id="setpoint" name="setpoint" type="number"/>
-<label for="vents">VENTS</label><input id="vents" name="vents" type="text"/>
-<label for="hum">HUM</label><input id="hum" name="hum" type="text"/>
-<label for="ambient">AMBIENT</label><input id="ambient" name="ambient" type="text"/>
-<label for="supply_voor">SUPPLY VOOR</label><input id="supply_voor" name="supply_voor" type="text"/>
-<label for="supply_na">SUPPLY NA</label><input id="supply_na" name="supply_na" type="text"/>
-<label for="return_voor">RETURN VOOR</label><input id="return_voor" name="return_voor" type="text"/>
-<label for="return_na">RETURN NA</label><input id="return_na" name="return_na" type="text"/>
-<label for="temp_in_range">TEMPERATUUR IN-RANGE NA REPAIR</label><input id="temp_in_range" name="temp_in_range" type="text"/>
-<label class="full-width" for="probleem">OMSCHRIJVING / PROBLEEM</label><textarea class="full-width" id="probleem" name="probleem" rows="3"></textarea>
-<label class="full-width" for="opmerkingen">OPMERKINGEN</label><textarea class="full-width" id="opmerkingen" name="opmerkingen" rows="3"></textarea>
+<label for="containernr">CONTAINERNR</label><input id="containernr" name="containernr" oninput="this.value = this.value.toUpperCase()" pattern="^[A-Z]{4}[0-9]{7}$" required="" title="Must be 4 letters followed by 7 digits (e.g., MSDU9823150)" type="text"/>
+<label for="datum">DATUM (Date)</label><input id="datum" name="datum" required="" type="date">
+<label for="naam">NAAM (Technician Name)</label><input id="naam" name="naam" readonly="" required="" type="text"/>
+<label for="model">MODEL</label><input id="model" name="model" required="" type="text"/>
+<label for="serienr">SERIENR.</label><input id="serienr" name="serienr" required="" type="text"/>
+<label for="warranty_id">WARRANTY ID NR</label><input id="warranty_id" name="warranty_id" required="" type="text"/>
+<label for="garantie">GARANTIE</label><input id="garantie" name="garantie" required="" type="text"/>
+<label for="setpoint">SETPOINT °C</label><input id="setpoint" name="setpoint" required="" type="number"/>
+<label for="vents">VENTS</label><input id="vents" name="vents" required="" type="text"/>
+<label for="hum">HUM</label><input id="hum" name="hum" required="" type="text"/>
+<label for="ambient">AMBIENT °C</label><input id="ambient" name="ambient" required="" type="text"/>
+<label for="supply_voor">SUPPLY VOOR °C</label><input id="supply_voor" name="supply_voor" required="" type="text"/>
+<label for="supply_na">SUPPLY NA °C</label><input id="supply_na" name="supply_na" required="" type="text"/>
+<label for="return_voor">RETURN VOOR °C</label><input id="return_voor" name="return_voor" required="" type="text"/>
+<label for="return_na">RETURN NA °C</label><input id="return_na" name="return_na" required="" type="text"/>
+<label for="temp_in_range">TEMPERATUUR IN-RANGE NA REPAIR</label><input id="temp_in_range" name="temp_in_range" required="" type="text"/>
+<label class="full-width" for="probleem">OMSCHRIJVING / PROBLEEM</label><textarea class="full-width" id="probleem" name="probleem" required="" rows="3"></textarea>
+<label class="full-width" for="opmerkingen">OPMERKINGEN</label><textarea class="full-width" id="opmerkingen" name="opmerkingen" required="" rows="3"></textarea>
 <div class="full-width" id="photosSection">
 <fieldset>
 <legend>Photos</legend>
 <div id="fotos_voor">
-<label>Fotos VOOR</label><input name="fotos_voor" type="file"/>
+<label>Fotos VOOR</label><input name="fotos_voor" required="" type="file"/>
 </div>
 <button class="add-button" onclick="addPhoto('fotos_voor')" type="button">Add More Before Photos</button>
 <div id="fotos_na">
-<label>Fotos NA</label><input name="fotos_na" type="file"/>
+<label>Fotos NA</label><input name="fotos_na" required="" type="file"/>
 </div>
 <button class="add-button" onclick="addPhoto('fotos_na')" type="button">Add More After Photos</button>
 </fieldset>
@@ -88,7 +88,7 @@
 <button class="add-button" onclick="addJob()" type="button">Add Job</button><button class="add-button" onclick="addUndefinedJob()" type="button">Add Undefined Job</button>
 </div>
 <button class="full-width" type="submit">Submit Report</button>
-</form>
+</input></form>
 </main>
 <script>
 const jobData = [
@@ -225,7 +225,6 @@ window.onload = () => {
   addJob();
 };
 </script>
-
 <style>
   #loginOverlay {
     position: fixed;
@@ -242,13 +241,13 @@ window.onload = () => {
   #loginError { color: red; display: none; font-size: 14px; }
 </style>
 <div id="loginOverlay">
-  <div id="loginBox">
-    <h3>Login</h3>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <div id="loginError">Invalid credentials</div>
-    <button onclick="validateLogin()">Login</button>
-  </div>
+<div id="loginBox">
+<h3>Login</h3>
+<input id="username" placeholder="Username" type="text"/>
+<input id="password" placeholder="Password" type="password"/>
+<div id="loginError">Invalid credentials</div>
+<button onclick="validateLogin()">Login</button>
+</div>
 </div>
 <script>
   const credentials = {
@@ -272,6 +271,5 @@ window.onload = () => {
     }
   }
 </script>
-
 </body>
 </html>
