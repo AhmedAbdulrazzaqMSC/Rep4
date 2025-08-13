@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>REMS – Reefer Equipment Maintenance System</title>
+<style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+    header { background: #003366; color: white; padding: 15px 20px; text-align: center; font-size: 20px; position: relative; }
+    main { padding: 20px; max-width: 1200px; margin: auto; }
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    label { font-weight: bold; margin-bottom: 5px; display: block; }
+    input, select, textarea, button {
+      padding: 8px;
+      width: 100%;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    textarea { resize: vertical; }
+    .full-width { grid-column: 1 / -1; }
+    fieldset { border: 1px solid #ccc; padding: 10px; border-radius: 5px; position: relative; }
+    legend { font-weight: bold; }
+    button.add-button {
+      background-color: #003366;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: -5px;
+    }
+    button.add-button:hover { background-color: #0059b3; }
+    @media (max-width: 768px) {
+      form { grid-template-columns: 1fr; }
+    }
+    #loginOverlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.8);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 9999;
+    }
+    #loginBox {
+      background: white; padding: 20px; border-radius: 8px;
+      max-width: 300px; width: 90%;
+    }
+    #loginBox input { width: 100%; margin-bottom: 10px; padding: 8px; }
+    #loginError { color: red; display: none; font-size: 14px; }
+    .job-section { margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 5px; }
+    .remove-btn {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background: #990000;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .remove-btn:hover {
+      background: #770000;
+    }
+    .photo-container {
+      position: relative;
+      margin-bottom: 5px;
+    }
+    .photo-remove-btn {
+      position: absolute;
+      right: -25px;
+      top: 8px;
+      background: #990000;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+    }
+    .test-mode-banner {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      background: red;
+      color: white;
+      padding: 2px 5px;
+      font-size: 14px;
+    }
+  </style>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+<body>
+<header>
+    <div class="test-mode-banner">TEST ENVIRONMENT</div>
+    <button onclick="logout()" style="float:right; margin-right:10px; background-color:#990000; color:white; border:none; padding:5px 10px; cursor:pointer;">
+      Logout
+    </button>REMS – Reefer Equipment Maintenance System</header>
+<main>
+<form id="repairForm">
+<label for="containernr">CONTAINERNR</label><input id="containernr" name="containernr" oninput="this.value = this.value.toUpperCase()" pattern="^[A-Z]{4}[0-9]{7}$" required="" title="Must be 4 letters followed by 7 digits (e.g., MSDU9823150)" type="text"/>
+<label for="datum">DATUM (Date)</label><input id="datum" name="datum" required="" type="date">
+<label for="naam">NAAM (Technician Name)</label><input id="naam" name="naam" readonly="" required="" type="text"/>
+<label for="model">MODEL</label><input id="model" name="model" required="" type="text"/>
+<label for="serienr">SERIENR.</label><input id="serienr" name="serienr" required="" type="text"/>
+<label for="warranty_id">WARRANTY ID NR</label><input id="warranty_id" name="warranty_id" required="" type="text"/>
+<label for="garantie">GARANTIE</label><input id="garantie" name="garantie" required="" type="text"/>
+<label for="setpoint">SETPOINT °C</label><input id="setpoint" name="setpoint" required="" type="text"/>
+<label for="vents">VENTS</label><input id="vents" name="vents" required="" type="text"/>
+<label for="hum">HUM</label><input id="hum" name="hum" required="" type="text"/>
+<label for="ambient">AMBIENT °C</label><input id="ambient" name="ambient" required="" type="text"/>
+<label for="supply_voor">SUPPLY VOOR °C</label><input id="supply_voor" name="supply_voor" required="" type="text"/>
+<label for="supply_na">SUPPLY NA °C</label><input id="supply_na" name="supply_na" required="" type="text"/>
+<label for="return_voor">RETURN VOOR °C</label><input id="return_voor" name="return_voor" required="" type="text"/>
+<label for="return_na">RETURN NA °C</label><input id="return_na" name="return_na" required="" type="text"/>
+<label for="temp_in_range">TEMPERATUUR IN-RANGE NA REPAIR</label><input id="temp_in_range" name="temp_in_range" required="" type="text"/>
+<label class="full-width" for="probleem">OMSCHRIJVING / PROBLEEM</label><textarea class="full-width" id="probleem" name="probleem" required="" rows="3"></textarea>
+<label class="full-width" for="opmerkingen">OPMERKINGEN</label><textarea class="full-width" id="opmerkingen" name="opmerkingen" required="" rows="3"></textarea>
+<div class="full-width" id="photosSection">
+<fieldset>
+<legend>Photos</legend>
+<div id="fotos_voor">
+  <label>Fotos VOOR</label>
+  <div class="photo-container">
+    <input name="fotos_voor" required type="file">
+    <button type="button" onclick="removePhoto(this)" class="photo-remove-btn">×</button>
+  </div>
+</div>
+<button class="add-button" onclick="addPhoto('fotos_voor')" type="button">Add More Before Photos</button>
+<div id="fotos_na">
+  <label>Fotos NA</label>
+  <div class="photo-container">
+    <input name="fotos_na" required type="file">
+    <button type="button" onclick="removePhoto(this)" class="photo-remove-btn">×</button>
+  </div>
+</div>
+<button class="add-button" onclick="addPhoto('fotos_na')" type="button">Add More After Photos</button>
+</fieldset>
+</div>
+<div class="full-width" id="alarmContainer">
+<fieldset><legend>Alarms</legend></fieldset>
+<button class="add-button" onclick="addAlarm()" type="button">Add Alarm</button>
+</div>
+<div class="full-width" id="jobContainer">
+<fieldset><legend>Job Tasks</legend></fieldset>
+<button class="add-button" onclick="addJob()" type="button">Add Job</button><button class="add-button" onclick="addUndefinedJob()" type="button">Add Undefined Job</button>
+</div>
+<button class="full-width" type="submit">Submit Report</button>
+</form>
+</main>
+
+<div id="loginOverlay">
+<div id="loginBox">
+<h3>Login</h3>
+<input id="username" placeholder="Username" type="text"/>
+<input id="password" placeholder="Password" type="password"/>
+<div id="loginError">Invalid credentials</div>
+<button onclick="validateLogin()">Login</button>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+const jobData = [
+  { code: "A011A", part: "38-00557-00", description: "Fan, Evaporator", hours: 0.5 },
+  { code: "A018A", part: "12-56012", description: "Controller ML3, Green Label, Repaired", hours: 1.0 },
+  { code: "A037A", part: "76-66694-00", description: "Sensor, Humidity W/Bracket (HS)", hours: 1.25 },
+  { code: "B075A", part: "81-04203-25", description: "Condenser Coil (ALU/ALU)", hours: 4.0 },
+  { code: "B075A", part: "69NT43-202-20PK5", description: "Condenser Coil, 4-Row", hours: 4.0 },
+  { code: "B075A", part: "81-04203-21", description: "Condenser Coil, Assembly (excl all related jobs)", hours: 4.0 },
+  { code: "B064A", part: "18-10129-22", description: "COMPRESSOR, THINLINE", hours: 3.25 },
+  { code: "A030A", part: "54-00742-00", description: "Motor, evaporator", hours: 2.0 },
+  { code: "B064A", part: "18-10178-22", description: "COMPRESSOR SCROLL PRIMELINE", hours: 2.0 },
+  { code: "A005A", part: "22-50088-02", description: "Capacitor, CFM, 15uF", hours: 1.5 },
+  { code: "A005A", part: "22-50088-00", description: "Capacitor, EF, 20uF (High Speed)", hours: 1.5 },
+  { code: "A037A", part: "76-66694-00", description: "Sensor, Humidity W/Bracket  (HS)", hours: 1.25 },
+  { code: "A018A", part: "12-56009", description: "Controller ML3, Yellow Label, Repaired", hours: 1.0 },
+  { code: "A018A", part: "12-56012", description: "Controller ML3, Green Label, Repaired", hours: 1.0 },
+  { code: "A008A", part: "66U1-7842-13", description: "Breaker, Circuit - 460 vac, 25 Amp, (CB1)", hours: 1.0 },
+  { code: "B069A", part: "76-50210-00", description: "Kit, Compressor Terminal Wiring (Single Voltage)", hours: 1.0 },
+  { code: "A013A", part: "10-00431-07", description: "Contactor, 30A", hours: 0.75 },
+  { code: "A058A", part: "12-00395-01SV", description: "Sensor, Supply, Assembly (SRS & STS)", hours: 0.75 },
+  { code: "B074A", part: "07-00292-00", description: "SW20 Compressor Oil, Castrol Icematic (Quart) (1 liter)", hours: 0.5 },
+  { code: "B087A", part: "14-00464-20", description: "Filter Drier, with O-Rings", hours: 0.5 },
+  { code: "B094A", part: "12-00309-06", description: "Switch, High Pressure (HPS)", hours: 0.5 },
+  { code: "A002A", part: "22-66651-20", description: "Cable MSC ContainerFlex FG7OK 4G4 11awg (per meter)", hours: 0.5 },
+  { code: "A002X", part: "22-50463-00PK50", description: "SPLICE KIT FAST III", hours: 0.5 },
+  { code: "A002X", part: "22-50463-00PK5", description: "SPLICE KIT FAST III", hours: 0.5 },
+  { code: "A002A", part: "22-66654-20", description: "Cable MSC ContainerFlex FG7OK 4G4 11awg (per meter)", hours: 0.5 },
+  { code: "A001A", part: "22-02378-00PK10", description: "Plug, Power", hours: 0.5 },
+  { code: "A028A", part: "10-00439-00", description: "Transformer, Current Sensing (CS)", hours: 0.5 },
+  { code: "A053A", part: "12-00495-02SV", description: "Sensor, Ambient / Defrost kit (AMBS / DTS)", hours: 0.5 },
+  { code: "A001A", part: "818559A", description: "Power plug", hours: 0.5 },
+  { code: "A002A", part: "818831A", description: "Cable MSC ContainerFlex FG7OK 4G4 11awg (per meter)", hours: 0.5 },
+  { code: "A002X", part: "818260A", description: "Splice kit, AKS to NSK", hours: 0.5 },
+  { code: "A011A", part: "38-00557-00", description: "Fan, Evaporator", hours: 0.5 },
+  { code: "A051A", part: "12-00495-02SV", description: "Sensor, Ambient / Defrost kit (AMBS / DTS)", hours: 0.5 },
+  { code: "A028A", part: "10-00439-02", description: "Transformer, Current Sensing (CS)", hours: 0.5 },
+  { code: "A039A", part: "79-66669-05", description: "Keypad Assy", hours: 0.5 },
+  { code: "A029A", part: "12-00433-00RB", description: "Module, Display (Repaired)", hours: 0.5 },
+  { code: "A039A", part: "79-66669-04", description: "Keypad, Assembly", hours: 0.5 },
+  { code: "A034A", part: "22-02336-08", description: "Fuse, 7.5 Amp", hours: 0.25 },
+  { code: "A041A", part: "30-50377-00", description: "Controller/DataCORDER Module Standard Battery Holder with Connector", hours: 0.25 },
+  { code: "B123A", part: "14-00353-20", description: "Piston and Motor Assembly", hours: 0.25 },
+  { code: "B110A", part: "17-10811-05", description: "Gasket, Service Valve (2 Bolt) (excl all related jobs)", hours: 0.25 }
+];
+
+const credentials = {
+  "Brahim Moukafih": "bm123",
+  "Christophe Jongenelen": "cj123",
+  "Gillis Keustermans": "Gillis Keustermans",
+  "Brahim Arebbat": "bar174",
+  "Ronny Joosen": "roj174",
+  "Filip Meys": "flm174",
+  "Mohamed El Faroussi": "mohfr174",
+  "Mohamed Moukafih": "mohkf174",
+  "Maksym Karalash": "mks147",
+  "Mustafa Kahraman": "mstk174",
+  "Hassan Ouchan": "ho123",
+  "Marc Eyckmans": "me123",
+  "Mohammed Ballafkih": "mb123",
+  "Yannick Standaert": "ys123",
+  "Ahmed Abdulrazzaq": "ahab174",
+  "Youssef Stitou": "yst123",
+  "Admin": "admin123"
+};
+
+// Check login status on page load
+document.addEventListener("DOMContentLoaded", function() {
+  const loggedInUser = localStorage.getItem("loggedInUser");
+  if (loggedInUser) {
+    document.getElementById('naam').value = loggedInUser;
+    document.getElementById('loginOverlay').style.display = 'none';
+    addJob(); // Initialize with one job section
+  } else {
+    document.getElementById('loginOverlay').style.display = 'flex';
+  }
+});
+
+function validateLogin() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+  
+  if (credentials[u] && credentials[u] === p) {
+    document.getElementById('naam').value = u;
+    document.getElementById('loginOverlay').style.display = 'none';
+    localStorage.setItem("loggedInUser", u); // Store username
+    addJob(); // Initialize with one job section
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function logout() {
+  localStorage.removeItem("loggedInUser");
+  location.reload();
+}
+
+function addJob() {
+  const container = document.querySelector("#jobContainer fieldset");
+  const fieldset = document.createElement("fieldset");
+  fieldset.classList.add("job-section");
+
+  let options = "";
+  jobData.forEach(j => {
+    options += `<option value="${j.code}">${j.description}</option>`;
+  });
+
+  fieldset.innerHTML = `
+    <button type="button" onclick="removeJob(this)" class="remove-btn">×</button>
+    <label>Job Description</label>
+    <select name="job_description[]" class="job-select" onchange="fillJobData(this)">
+      <option value="">Select</option>
+      ${options}
+    </select>
+    <label>Job Code</label>
+    <input type="text" name="job_code[]" readonly>
+    <label>Part Number</label>
+    <input type="text" name="part_number[]">
+    <label>Part Description</label>
+    <input type="text" name="part_description[]" readonly>
+    <label>Quantity</label>
+    <input type="number" name="quantity[]">
+    <label>Damage Type</label>
+    <select name="damage_type[]">
+      <option value="">Select</option>
+      <option value="BK">BK - Blocked</option>
+      <option value="BL">BL - Blowout</option>
+      <option value="BN">BN - Burned</option>
+      <option value="BR">BR - Broken/Split</option>
+      <option value="CO">CO - Corroded/Rusty</option>
+      <option value="CT">CT - Contaminated</option>
+      <option value="CU">CU - Cut</option>
+      <option value="CW">CW - Cracked weld</option>
+      <option value="DT">DT - Dent</option>
+      <option value="DY">DY - Dirty</option>
+      <option value="IR">IR - Improper Repair</option>
+      <option value="LF">LF - Low Fluid Level</option>
+      <option value="LK">LK - Leak</option>
+      <option value="LO">LO - Loose</option>
+      <option value="MS">MS - Missing/Lost</option>
+      <option value="OC">OC - Out of calibration</option>
+      <option value="OL">OL - Oil saturated</option>
+      <option value="RA">RA - Remove For Access</option>
+      <option value="RN">RN - Repair Necessary</option>
+      <option value="SH">SH - Short/Open circuit</option>
+      <option value="TR">TR - Test Required</option>
+      <option value="ZZ">ZZ - Not Applicable</option>
+    </select>
+    <label>Old Serial Number</label>
+    <input type="text" name="serial_old[]">
+    <label>New Serial Number</label>
+    <input type="text" name="serial_new[]">
+    <input type="hidden" name="labor_hours[]" readonly>
+  `;
+  container.appendChild(fieldset);
+  $(fieldset).find('.job-select').select2({ width: '100%' });
+}
+
+function fillJobData(selectElem) {
+  const selectedCode = selectElem.value;
+  const job = jobData.find(j => j.code === selectedCode);
+  if (!job) return;
+  const container = selectElem.closest("fieldset");
+  container.querySelector('input[name="job_code[]"]').value = job.code;
+  container.querySelector('input[name="part_number[]"]').value = job.part;
+  container.querySelector('input[name="part_description[]"]').value = job.description;
+  container.querySelector('input[name="labor_hours[]"]').value = job.hours;
+  selectElem.setAttribute("data-description", job.description);
+}
+
+function addPhoto(sectionId) {
+  const container = document.getElementById(sectionId);
+  const photoCount = container.querySelectorAll('input[type="file"]').length;
+  
+  // Limit to 2 photos per section (2 before + 2 after = 4 total)
+  if (photoCount >= 2) {
+    alert("Maximum 2 photos allowed per section (4 total)");
+    return;
+  }
+
+  const div = document.createElement('div');
+  div.className = 'photo-container';
+  
+  div.innerHTML = `
+    <input type="file" name="${sectionId}_extra">
+    <button type="button" onclick="removePhoto(this)" class="photo-remove-btn">×</button>
+  `;
+  container.appendChild(div);
+}
+
+function removePhoto(button) {
+  button.parentElement.remove();
+}
+
+function addAlarm() {
+  const container = document.querySelector("#alarmContainer fieldset");
+  const div = document.createElement('div');
+  div.style.position = 'relative';
+  div.style.marginBottom = '5px';
+  
+  div.innerHTML = `
+    <input type="text" name="alarm" placeholder="Alarm">
+    <button type="button" onclick="removeAlarm(this)" class="remove-btn">×</button>
+  `;
+  container.appendChild(div);
+}
+
+function removeAlarm(button) {
+  button.parentElement.remove();
+}
+
+function addUndefinedJob() {
+  const container = document.querySelector("#jobContainer fieldset");
+  const fieldset = document.createElement("fieldset");
+  fieldset.classList.add("job-section");  
+
+  fieldset.innerHTML = `
+    <button type="button" onclick="removeJob(this)" class="remove-btn">×</button>
+    <label>Job Description</label>
+    <input type="text" name="job_description[]">
+    <label>Job Code</label>
+    <input type="text" name="job_code[]">
+    <label>Part Number</label>
+    <input type="text" name="part_number[]">
+    <label>Part Description</label>
+    <input type="text" name="part_description[]">
+    <label>Quantity</label>
+    <input type="number" name="quantity[]">
+    <label>Damage Type</label>
+    <select name="damage_type[]">
+      <option value="">Select</option>
+      <option value="BK">BK - Blocked</option>
+      <option value="BL">BL - Blowout</option>
+      <option value="BN">BN - Burned</option>
+      <option value="BR">BR - Broken/Split</option>
+      <option value="CO">CO - Corroded/Rusty</option>
+      <option value="CT">CT - Contaminated</option>
+      <option value="CU">CU - Cut</option>
+      <option value="CW">CW - Cracked weld</option>
+      <option value="DT">DT - Dent</option>
+      <option value="DY">DY - Dirty</option>
+      <option value="IR">IR - Improper Repair</option>
+      <option value="LF">LF - Low Fluid Level</option>
+      <option value="LK">LK - Leak</option>
+      <option value="LO">LO - Loose</option>
+      <option value="MS">MS - Missing/Lost</option>
+      <option value="OC">OC - Out of calibration</option>
+      <option value="OL">OL - Oil saturated</option>
+      <option value="RA">RA - Remove For Access</option>
+      <option value="RN">RN - Repair Necessary</option>
+      <option value="SH">SH - Short/Open circuit</option>
+      <option value="TR">TR - Test Required</option>
+      <option value="ZZ">ZZ - Not Applicable</option>
+    </select>
+    <label>Old Serial Number</label>
+    <input type="text" name="serial_old[]">
+    <label>New Serial Number</label>
+    <input type="text" name="serial_new[]">
+    <label>Labor Hours</label>
+    <input type="text" name="labor_hours[]">
+  `;
+  container.appendChild(fieldset);
+  $(fieldset).find('.job-select').select2({ width: '100%' });
+}
+
+function removeJob(button) {
+  if (document.querySelectorAll('.job-section').length <= 1) {
+    alert("You must keep at least one job section");
+    return;
+  }
+  button.closest('.job-section').remove();
+}
+
+async function submitRepair(event) {
+  event.preventDefault();
+
+  // Check photo limits
+  const beforePhotos = document.querySelectorAll('#fotos_voor input[type="file"]');
+  const afterPhotos = document.querySelectorAll('#fotos_na input[type="file"]');
+  
+  if (beforePhotos.length + afterPhotos.length > 4) {
+    alert("Maximum 4 photos allowed (2 before + 2 after)");
+    return;
+  }
+
+  const form = document.getElementById("repairForm");
+  const formData = new FormData(form);
+
+  formData.append("containernr", form.containernr.value);
+  formData.append("naam", form.naam.value);
+  formData.append("datum", form.datum.value);
+  formData.append("model", form.model.value);
+  formData.append("serienr", form.serienr.value);
+  formData.append("warranty_id", form.warranty_id.value);
+  formData.append("garantie", form.garantie.value);
+  formData.append("setpoint", form.setpoint.value);
+  formData.append("vents", form.vents.value);
+  formData.append("hum", form.hum.value);
+  formData.append("ambient", form.ambient.value);
+  formData.append("supply_voor", form.supply_voor.value);
+  formData.append("supply_na", form.supply_na.value);
+  formData.append("return_voor", form.return_voor.value);
+  formData.append("return_na", form.return_na.value);
+  formData.append("temp_in_range", form.temp_in_range.value);
+  formData.append("probleem", form.probleem.value);
+  formData.append("opmerkingen", form.opmerkingen.value);
+
+  const jobSections = document.querySelectorAll(".job-section");
+  formData.append("job_count", jobSections.length);
+
+  jobSections.forEach((section, index) => {
+    const descElem = section.querySelector("[name='job_description[]']");
+    const desc = descElem?.getAttribute("data-description") || descElem?.value || "";
+    formData.append(`job[${index}][description]`, desc);
+    formData.append(`job[${index}][code]`, section.querySelector("[name='job_code[]']").value);
+    formData.append(`job[${index}][part_number]`, section.querySelector("[name='part_number[]']").value);
+    formData.append(`job[${index}][part_description]`, section.querySelector("[name='part_description[]']").value);
+    formData.append(`job[${index}][quantity]`, section.querySelector("[name='quantity[]']").value);
+    formData.append(`job[${index}][old_serial]`, section.querySelector("[name='serial_old[]']").value);
+    formData.append(`job[${index}][new_serial]`, section.querySelector("[name='serial_new[]']").value);
+    formData.append(`job[${index}][labor_hours]`, section.querySelector("[name='labor_hours[]']").value);
+    formData.append(`job[${index}][damage_type]`, section.querySelector("[name='damage_type[]']").value);
+  });
+
+  const alarmInputs = document.querySelectorAll("input[name='alarm']");
+  const alarmValues = Array.from(alarmInputs)
+    .map(input => input.value.trim())
+    .filter((val, idx, self) => val && self.indexOf(val) === idx);
+  alarmValues.forEach((value) => {
+    formData.append('alarm[]', value);
+  });
+
+  try {
+    const response = await fetch('http://localhost:5000/api/submit', {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    if (result.status === "success") {
+      alert("✅ Report submitted successfully!");
+      const techName = document.getElementById("naam").value;
+      form.reset();
+      document.getElementById("naam").value = techName;
+      // Reset to one job section
+      document.querySelector("#jobContainer fieldset").innerHTML = "";
+      addJob();
+    } else {
+      alert("❌ Error submitting report: " + result.message);
+    }
+  } catch (error) {
+    alert("❌ Network error: " + error.message);
+  }
+}
+
+// Initialize form submission handler
+document.getElementById("repairForm").addEventListener("submit", submitRepair);
+</script>
+</body>
+</html>
