@@ -124,6 +124,29 @@
       position: relative;
       margin-bottom: 10px;
     }
+    /* New styles for disabled button and spinner */
+    button:disabled {
+      background-color: #cccccc !important;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    #submitButton {
+      transition: background-color 0.3s ease;
+    }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
@@ -186,7 +209,7 @@
 <fieldset><legend>Job Tasks</legend></fieldset>
 <button class="add-button" onclick="addJob()" type="button">Add Job</button><button class="add-button" onclick="addUndefinedJob()" type="button">Add Undefined Job</button>
 </div>
-<button class="full-width" type="submit">Submit Report</button>
+<button class="full-width" type="submit" id="submitButton">Submit Report</button>
 </form>
 </main>
 
@@ -475,64 +498,70 @@ function removeJob(button) {
 
 async function submitRepair(event) {
   event.preventDefault();
-
-  // Check photo limits
-  const beforePhotos = document.querySelectorAll('#fotos_voor input[type="file"]');
-  const afterPhotos = document.querySelectorAll('#fotos_na input[type="file"]');
   
-  if (beforePhotos.length + afterPhotos.length > 4) {
-    alert("Maximum 4 photos allowed (2 before + 2 after)");
-    return;
-  }
-
-  const form = document.getElementById("repairForm");
-  const formData = new FormData(form);
-
-  formData.append("containernr", form.containernr.value);
-  formData.append("naam", form.naam.value);
-  formData.append("datum", form.datum.value);
-  formData.append("model", form.model.value);
-  formData.append("serienr", form.serienr.value);
-  formData.append("warranty_id", form.warranty_id.value);
-  formData.append("garantie", form.garantie.value);
-  formData.append("setpoint", form.setpoint.value);
-  formData.append("vents", form.vents.value);
-  formData.append("hum", form.hum.value);
-  formData.append("ambient", form.ambient.value);
-  formData.append("supply_voor", form.supply_voor.value);
-  formData.append("supply_na", form.supply_na.value);
-  formData.append("return_voor", form.return_voor.value);
-  formData.append("return_na", form.return_na.value);
-  formData.append("temp_in_range", form.temp_in_range.value);
-  formData.append("probleem", form.probleem.value);
-  formData.append("opmerkingen", form.opmerkingen.value);
-
-  const jobSections = document.querySelectorAll(".job-section");
-  formData.append("job_count", jobSections.length);
-
-  jobSections.forEach((section, index) => {
-    const descElem = section.querySelector("[name='job_description[]']");
-    const desc = descElem?.getAttribute("data-description") || descElem?.value || "";
-    formData.append(`job[${index}][description]`, desc);
-    formData.append(`job[${index}][code]`, section.querySelector("[name='job_code[]']").value);
-    formData.append(`job[${index}][part_number]`, section.querySelector("[name='part_number[]']").value);
-    formData.append(`job[${index}][part_description]`, section.querySelector("[name='part_description[]']").value);
-    formData.append(`job[${index}][quantity]`, section.querySelector("[name='quantity[]']").value);
-    formData.append(`job[${index}][old_serial]`, section.querySelector("[name='serial_old[]']").value);
-    formData.append(`job[${index}][new_serial]`, section.querySelector("[name='serial_new[]']").value);
-    formData.append(`job[${index}][labor_hours]`, section.querySelector("[name='labor_hours[]']").value);
-    formData.append(`job[${index}][damage_type]`, section.querySelector("[name='damage_type[]']").value);
-  });
-
-  const alarmInputs = document.querySelectorAll("input[name='alarm']");
-  const alarmValues = Array.from(alarmInputs)
-    .map(input => input.value.trim())
-    .filter((val, idx, self) => val && self.indexOf(val) === idx);
-  alarmValues.forEach((value) => {
-    formData.append('alarm[]', value);
-  });
+  const submitButton = document.getElementById('submitButton');
+  
+  // Disable button and show loading state
+  submitButton.disabled = true;
+  submitButton.innerHTML = '<span class="spinner"></span> Processing...';
 
   try {
+    // Check photo limits
+    const beforePhotos = document.querySelectorAll('#fotos_voor input[type="file"]');
+    const afterPhotos = document.querySelectorAll('#fotos_na input[type="file"]');
+    
+    if (beforePhotos.length + afterPhotos.length > 4) {
+      alert("Maximum 4 photos allowed (2 before + 2 after)");
+      throw new Error("Too many photos");
+    }
+
+    const form = document.getElementById("repairForm");
+    const formData = new FormData(form);
+
+    formData.append("containernr", form.containernr.value);
+    formData.append("naam", form.naam.value);
+    formData.append("datum", form.datum.value);
+    formData.append("model", form.model.value);
+    formData.append("serienr", form.serienr.value);
+    formData.append("warranty_id", form.warranty_id.value);
+    formData.append("garantie", form.garantie.value);
+    formData.append("setpoint", form.setpoint.value);
+    formData.append("vents", form.vents.value);
+    formData.append("hum", form.hum.value);
+    formData.append("ambient", form.ambient.value);
+    formData.append("supply_voor", form.supply_voor.value);
+    formData.append("supply_na", form.supply_na.value);
+    formData.append("return_voor", form.return_voor.value);
+    formData.append("return_na", form.return_na.value);
+    formData.append("temp_in_range", form.temp_in_range.value);
+    formData.append("probleem", form.probleem.value);
+    formData.append("opmerkingen", form.opmerkingen.value);
+
+    const jobSections = document.querySelectorAll(".job-section");
+    formData.append("job_count", jobSections.length);
+
+    jobSections.forEach((section, index) => {
+      const descElem = section.querySelector("[name='job_description[]']");
+      const desc = descElem?.getAttribute("data-description") || descElem?.value || "";
+      formData.append(`job[${index}][description]`, desc);
+      formData.append(`job[${index}][code]`, section.querySelector("[name='job_code[]']").value);
+      formData.append(`job[${index}][part_number]`, section.querySelector("[name='part_number[]']").value);
+      formData.append(`job[${index}][part_description]`, section.querySelector("[name='part_description[]']").value);
+      formData.append(`job[${index}][quantity]`, section.querySelector("[name='quantity[]']").value);
+      formData.append(`job[${index}][old_serial]`, section.querySelector("[name='serial_old[]']").value);
+      formData.append(`job[${index}][new_serial]`, section.querySelector("[name='serial_new[]']").value);
+      formData.append(`job[${index}][labor_hours]`, section.querySelector("[name='labor_hours[]']").value);
+      formData.append(`job[${index}][damage_type]`, section.querySelector("[name='damage_type[]']").value);
+    });
+
+    const alarmInputs = document.querySelectorAll("input[name='alarm']");
+    const alarmValues = Array.from(alarmInputs)
+      .map(input => input.value.trim())
+      .filter((val, idx, self) => val && self.indexOf(val) === idx);
+    alarmValues.forEach((value) => {
+      formData.append('alarm[]', value);
+    });
+
     const response = await fetch('http://localhost:5000/api/submit', {
       method: "POST",
       body: formData,
@@ -551,12 +580,26 @@ async function submitRepair(event) {
       alert("❌ Error submitting report: " + result.message);
     }
   } catch (error) {
-    alert("❌ Network error: " + error.message);
+    if (error.message !== "Too many photos") {
+      alert("❌ Network error: " + error.message);
+    }
+  } finally {
+    // Re-enable button regardless of success/error
+    const submitButton = document.getElementById('submitButton');
+    submitButton.disabled = false;
+    submitButton.innerHTML = 'Submit Report';
   }
 }
 
 // Initialize form submission handler
-document.getElementById("repairForm").addEventListener("submit", submitRepair);
+document.getElementById("repairForm").addEventListener("submit", function(e) {
+  // Prevent multiple submissions if button is already disabled
+  if (document.getElementById('submitButton').disabled) {
+    e.preventDefault();
+    return;
+  }
+  submitRepair(e);
+});
 </script>
 </body>
 </html>
