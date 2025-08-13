@@ -34,7 +34,7 @@
       color: white;
       border: none;
       cursor: pointer;
-      margin-top: -5px;
+      margin-top: 10px;
     }
     button.add-button:hover { background-color: #0059b3; }
     @media (max-width: 768px) {
@@ -77,21 +77,32 @@
     }
     .photo-container {
       position: relative;
-      margin-bottom: 5px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .photo-remove-btn {
-      position: absolute;
-      right: -25px;
-      top: 8px;
       background: #990000;
       color: white;
       border: none;
       border-radius: 50%;
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 1;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .photo-remove-btn:hover {
+      background: #770000;
+    }
+    .photo-input {
+      flex-grow: 1;
     }
     .test-mode-banner {
       position: absolute;
@@ -101,6 +112,17 @@
       color: white;
       padding: 2px 5px;
       font-size: 14px;
+    }
+    .photo-section {
+      margin-bottom: 15px;
+    }
+    .photo-section label {
+      margin-bottom: 8px;
+      display: block;
+    }
+    .alarm-input-container {
+      position: relative;
+      margin-bottom: 10px;
     }
   </style>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -134,22 +156,26 @@
 <div class="full-width" id="photosSection">
 <fieldset>
 <legend>Photos</legend>
-<div id="fotos_voor">
+<div class="photo-section">
   <label>Fotos VOOR</label>
-  <div class="photo-container">
-    <input name="fotos_voor" required type="file">
-    <button type="button" onclick="removePhoto(this)" class="photo-remove-btn">×</button>
+  <div id="fotos_voor">
+    <div class="photo-container">
+      <input class="photo-input" name="fotos_voor" required type="file">
+      <button type="button" onclick="removePhoto(this)" class="photo-remove-btn" title="Remove photo">×</button>
+    </div>
   </div>
+  <button class="add-button" onclick="addPhoto('fotos_voor')" type="button">Add More Before Photos</button>
 </div>
-<button class="add-button" onclick="addPhoto('fotos_voor')" type="button">Add More Before Photos</button>
-<div id="fotos_na">
+<div class="photo-section">
   <label>Fotos NA</label>
-  <div class="photo-container">
-    <input name="fotos_na" required type="file">
-    <button type="button" onclick="removePhoto(this)" class="photo-remove-btn">×</button>
+  <div id="fotos_na">
+    <div class="photo-container">
+      <input class="photo-input" name="fotos_na" required type="file">
+      <button type="button" onclick="removePhoto(this)" class="photo-remove-btn" title="Remove photo">×</button>
+    </div>
   </div>
+  <button class="add-button" onclick="addPhoto('fotos_na')" type="button">Add More After Photos</button>
 </div>
-<button class="add-button" onclick="addPhoto('fotos_na')" type="button">Add More After Photos</button>
 </fieldset>
 </div>
 <div class="full-width" id="alarmContainer">
@@ -359,8 +385,8 @@ function addPhoto(sectionId) {
   div.className = 'photo-container';
   
   div.innerHTML = `
-    <input type="file" name="${sectionId}_extra">
-    <button type="button" onclick="removePhoto(this)" class="photo-remove-btn">×</button>
+    <input class="photo-input" type="file" name="${sectionId}_extra">
+    <button type="button" onclick="removePhoto(this)" class="photo-remove-btn" title="Remove photo">×</button>
   `;
   container.appendChild(div);
 }
@@ -372,8 +398,7 @@ function removePhoto(button) {
 function addAlarm() {
   const container = document.querySelector("#alarmContainer fieldset");
   const div = document.createElement('div');
-  div.style.position = 'relative';
-  div.style.marginBottom = '5px';
+  div.className = 'alarm-input-container';
   
   div.innerHTML = `
     <input type="text" name="alarm" placeholder="Alarm">
